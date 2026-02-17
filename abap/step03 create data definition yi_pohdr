@@ -1,0 +1,33 @@
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Purchase Order Header View'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity YI_POHDR as select from ytbpohdr
+composition [0..*] of YI_POITM as _Ekpo
+{
+    key ebeln as PONumber,
+        name1 as Vendor,
+        addrs as Addrs,
+        name2 as Shipto,
+        addr2 as Addr2,
+        erdat as PODate,
+        waers as Currency,
+        netwr as TotAmt,
+        subtl as SubTotal,
+        tttax as TotTax,
+        shipc as ShipCost,
+        othcs as OtherCost,
+        afnam as ReqName,
+        inco1 as IncoTerms,
+        @Semantics.user.createdBy: true
+        local_created_by as LocalCreatedBy,
+        @Semantics.systemDateTime.createdAt: true
+        local_created_at as LocalCreatedAt,
+        @Semantics.user.lastChangedBy: true
+        local_last_changed_by as LocalLastChangedBy,
+        @Semantics.systemDateTime.localInstanceLastChangedAt: true            
+        local_last_changed_at as LocalLastChangedAt,
+        @Semantics.systemDateTime.lastChangedAt: true
+        last_changed_at as LastChangedAt,
+        _Ekpo // Make association public
+}
+
