@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Order</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: 14px;  
+    }
+    
+    body {      
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;      
+    }
+    
+    .purchase-order {
+      border: 2px solid #0066CC;
+      width: 100%;
+      max-width: 1000px;
+      background-color: white;
+      padding: 25px;
+    }
+    
+    /* Header Styles */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .logo-circle {
+      width: 50px;
+      height: 50px;
+      background-color: #FFD700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #0066CC;
+      margin-bottom: 5px;
+    }
+    
+    .logo-text {
+      display: flex;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    
+    .logo-text span:first-child {
+      color: #D35400;
+    }
+    
+    .logo-text span:last-child {
+      color: #0066CC;
+    }
+    
+    .po-title {
+      font-size: 2.5em;
+      color: #0066CC;
+      font-weight: bold;
+      text-align: right;
+      flex: 1;
+      margin: 0 30px;
+    }
+    
+    .company-info {
+      line-height: 1.5;
+      margin-top: 10px;
+      flex: 1;
+    }
+    
+    .date-po {
+      text-align: right;
+      margin-top: 10px;
+      flex: 1;
+    }
+
+    .company-date-po {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .section-company {
+      width: 48%;
+      padding: 10px;
+      margin-bottom: 15px;       
+    }
+
+    /* Vendor and Ship To */
+    .vendor-ship-to {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .section {
+      width: 48%;
+      border: 1px solid #0066CC;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .section h2 {
+      background-color: #0066CC;
+      color: white;
+      padding: 5px;
+      margin: -10px -10px 10px -10px;
+      font-size: 1.1em;
+    }
+    
+    /* Requisitioner Section */
+    .requisitioner-section {
+      margin-bottom: 20px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      background-color: #0066CC;
+      color: white;
+      padding: 5px;
+    }
+    
+    .section-header > div {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .section-fields {
+      display: flex;
+      justify-content: space-between;
+      border: 1px solid #0066CC;
+      padding: 5px;
+    }
+    
+    .section-fields > div {
+      flex: 1;
+      border-right: 1px solid #0066CC;
+      padding: 5px;
+      min-height: 25px;
+    }
+    
+    .section-fields > div:last-child {
+      border-right: none;
+    }
+    
+    /* Items Table */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .items-table th {
+      background-color: #0066CC;
+      color: white;
+      padding: 8px;
+      text-align: left;
+      font-weight: normal;
+    }
+    
+    .items-table td {
+      border: 1px solid #0066CC;
+      padding: 8px;
+    }
+    
+    .items-table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    /* Comments Section */
+    .comments-section {
+      margin-bottom: 20px;
+    }
+    
+    .comments-section h2 {
+      background-color: #0066CC;
+      color: white;
+      padding: 5px;
+      margin: 0 -10px;
+    }
+
+    /* Totals Section */
+    .totals-section {
+      margin-bottom: 20px;
+      padding: 3px;
+      font-size: 14px;
+    }
+    
+    .totals-row {
+      position: relative;
+      display: flex;
+      flex: none;
+      flex-direction: row;  
+      justify-content: space-between;
+      top: 3px;
+      margin-left: 3px;
+      padding: 3px;              
+      font-size: 0.95em;
+    }
+    
+    .totals-row.total {
+      font-weight: bold;
+      background-color: #FFD700;
+      padding: 5px;
+      font-size: 1.1em;
+    }
+    
+    .totals-row.total span:first-child {
+      color: black;
+    }
+    
+    .totals-row.total span:last-child {
+      color: black;
+    }    
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="purchase-order">
+    <!-- Header Section -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-circle"><img style="height: 60px;"src="https://github.com/jenizar/sap-rap-print-purchase-order-form-sap-btp/blob/main/screenshots/logo.png?raw=true"/></div>
+        <div class="logo-text">
+          <span>Xfone</span><span>Cell</span>
+        </div>
+      </div>
+      
+      <div class="po-title">PURCHASE ORDER</div>      
+    
+    </header>
+
+      <div class="company-date-po">
+        <div class="section-company">
+        Xfone-Cell Co, Ltd<br>
+        Lagoona Street 1,<br>
+        Phone: (001) 610-2891234<br>
+        Los Angeles, CA, USA                   
+       </div>
+      <div class="vendor-ship-to">
+         DATE {{podate}}<br>
+         PO # {{ponumber}}<br>
+         Currency : {{currency}}
+      </div>
+      </div>   
+    <!-- Vendor and Ship To Sections -->    
+    <div class="vendor-ship-to">
+      <div class="section vendor">
+        <h2>VENDOR</h2>
+        {{vendor}}<br>
+        {{addrs}}<br>
+      </div>
+      
+      <div class="section ship-to">
+        <h2>SHIP TO</h2>
+        {{shipto}}<br>
+        {{addr2}}<br>
+      </div>
+    </div>
+
+    <!-- Requisitioner Section -->
+    <div class="requisitioner-section">
+      <div class="section-header">
+        <div>REQUISITIONER</div>
+        <div>SHIP VIA</div>
+        <div>F.O.B.</div>
+        <div>SHIPPING TERMS</div>
+      </div>
+      <div class="section-fields">
+        <div>{{reqname}}</div>
+        <div></div>
+        <div></div>
+        <div>{{incoterms}}</div>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>ITEM #</th>
+          <th>DESCRIPTION</th>
+          <th>QTY</th>
+          <th>UNIT PRICE</th>
+          <th>TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for item in items %}        
+        <tr>
+          <td>{{item.item}}</td>
+          <td>{{item.description}}</td>
+          <td>{{item.qty}}</td>
+          <td>{{item.unitprice}}</td>
+          <td>{{item.totalamt}}</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>   
+
+  <div class="totals-row">
+    <div class="comments-section">
+      <h2>Comments or Special Instructions</h2>
+    </div>
+    <div class="comments-section">     
+    </div>    
+    <div class="totals-section">
+      SUBTOTALS<br>
+      TAX<br>
+      SHIPPING<br>
+      OTHER<br>  
+     <div class="totals-row total">       
+       TOTAL
+     </div> 
+    </div>  
+    <div class="totals-section">
+     {{subtotal}}<br>
+     {{tottax}}<br>
+     {{shipcost}}<br>
+     {{othercost}}<br>
+     <div class="totals-row total">       
+      {{totamt}}<br>  
+     </div>  
+    </div>
+  </div>  
+
+  <div class="footer">
+    If you have any question about this purchase order, please contact<br>
+    logistics.info@xfone.com<br>
+  </div>
+
+
+          
