@@ -1,0 +1,129 @@
+CLASS LHC_EKKO DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+  PRIVATE SECTION.
+
+    CONSTANTS:
+      base_url     TYPE string VALUE 'https://b1b1-111-94-3-34.ngrok-free.app/printpo',
+      content_type TYPE string VALUE 'Content-type',
+      json_content TYPE string VALUE 'application/json; charset=UTF-8'.
+
+        DATA lv_json_payload TYPE string.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR Ekko RESULT result.
+    METHODS print_poform FOR MODIFY
+      IMPORTING keys FOR ACTION YI_POHDR~print_poform.
+
+    METHODS create_client
+        IMPORTING url           TYPE string
+        RETURNING VALUE(result) TYPE REF TO if_web_http_client
+        RAISING   cx_static_check.
+
+    METHODS create_post
+        IMPORTING post_without_id TYPE string
+        RETURNING VALUE(result)   TYPE string
+        RAISING   cx_static_check.
+ENDCLASS.
+
+CLASS LHC_EKKO IMPLEMENTATION.
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+  METHOD print_poform.
+    DATA: lv_service TYPE string,
+          lv_result TYPE string.
+
+    TYPES : BEGIN OF ty_gab,
+             PONumber    TYPE ytbpohdr-ebeln,
+             Vendor      TYPE ytbpohdr-name1,
+             Addrs       TYPE ytbpohdr-addrs,
+             Shipto      TYPE ytbpohdr-name2,
+             Addr2       TYPE ytbpohdr-addr2,
+             PODate      TYPE ytbpohdr-erdat,
+             Currency    TYPE ytbpohdr-waers,
+             TotAmt      TYPE ytbpohdr-netwr,
+             SubTotal    TYPE ytbpohdr-subtl,
+             TotTax      TYPE ytbpohdr-tttax,
+             ShipCost    TYPE ytbpohdr-shipc,
+             OtherCost   TYPE ytbpohdr-othcs,
+             ReqName     TYPE ytbpohdr-afnam,
+             IncoTerms   TYPE ytbpohdr-inco1,
+             Item        TYPE ytbpoitm-ebelp,
+             Description TYPE ytbpoitm-maktx,
+             Qty         TYPE ytbpoitm-ntgew,
+             UnitPrice   TYPE ytbpoitm-netpr,
+             TotalAmt    TYPE ytbpoitm-netwr,
+            END OF ty_gab.
+    DATA : gt_data TYPE TABLE OF ty_gab,
+           gs_data TYPE ty_gab.
+
+      READ ENTITY IN LOCAL MODE YI_POHDR
+       ALL FIELDS WITH CORRESPONDING #( keys )
+         RESULT DATA(it_data).
+
+      LOOP AT it_data INTO DATA(wa_data).
+        SELECT * FROM YTBPOITM WHERE ebeln = @wa_data-ponumber INTO TABLE @DATA(gt_poitm).
+      ENDLOOP.
+
+      LOOP AT gt_poitm INTO DATA(wa_poitm).
+        READ TABLE it_data INTO DATA(wa_hdr) WITH KEY ponumber = wa_poitm-ebeln.
+         gs_data-ponumber = wa_hdr-ponumber.
+         gs_data-vendor = wa_hdr-vendor.
+         gs_data-addrs = wa_hdr-addrs.
+         gs_data-shipto = wa_hdr-shipto.
+         gs_data-addr2 = wa_hdr-addr2.
+         gs_data-podate = wa_hdr-podate.
+         gs_data-currency = wa_hdr-currency.
+         gs_data-totamt = wa_hdr-totamt.
+         gs_data-subtotal = wa_hdr-subtotal.
+         gs_data-tottax = wa_hdr-tottax.
+         gs_data-shipcost = wa_hdr-shipcost.
+         gs_data-othercost = wa_hdr-othercost.
+         gs_data-reqname = wa_hdr-reqname.
+         gs_data-incoterms = wa_hdr-incoterms.
+         gs_data-item = wa_poitm-ebelp.
+         gs_data-description = wa_poitm-maktx.
+         gs_data-qty = wa_poitm-ntgew.
+         gs_data-unitprice = wa_poitm-netpr.
+         gs_data-totalamt = wa_poitm-netwr.
+        APPEND gs_data TO gt_data.
+      ENDLOOP.
+
+   /UI2/CL_JSON=>serialize(
+     EXPORTING
+      data        = gt_data               " Data to serialize (internal table)
+      pretty_name = 'L' "/UI2/CL_JSON=>pretty_mode-low_case " Optional: formats field names as low_case
+     RECEIVING
+      r_json      = lv_json_payload                " The resulting JSON string
+).
+
+    TRY.
+        " Create
+        DATA(create_response) = create_post( lv_json_payload ).
+
+      CATCH cx_root INTO DATA(exc).
+
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD create_client.
+    DATA(dest) = cl_http_destination_provider=>create_by_url( url ).
+    result = cl_web_http_client_manager=>create_by_http_destination( dest ).
+  ENDMETHOD.
+
+  METHOD create_post.
+    " Convert input post to JSON
+    DATA(json_post) = xco_cp_json=>data->from_abap( post_without_id )->apply(
+      VALUE #( ( xco_cp_json=>transformation->underscore_to_camel_case ) ) )->to_string(  ).
+
+    " Send JSON of post to server and return the response
+    DATA(url) = |{ base_url }|.
+    DATA(client) = create_client( url ).
+    DATA(req) = client->get_http_request(  ).
+    req->set_text( json_post ).
+    req->set_header_field( i_name = content_type i_value = json_content ).
+
+    result = client->execute( if_web_http_client=>post )->get_text(  ).
+
+    client->close(  ).
+  ENDMETHOD.
+
+ENDCLASS.
