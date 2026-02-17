@@ -58,7 +58,7 @@ lock dependent by _Ekko
   field ( readonly ) LocalCreatedBy, LocalCreatedAt, LocalLastChangedAt, LocalLastChangedBy, LastChangedAt;
   association _Ekko;
 
-  //mapping all field from YTBSOITM to YI_SOITM
+  //mapping all field from YTBPOITM to YI_POITM
   mapping for YTBPOITM corresponding
     {
       PONumber           = ebeln;
