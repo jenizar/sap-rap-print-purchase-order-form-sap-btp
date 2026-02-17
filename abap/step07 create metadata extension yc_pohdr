@@ -1,0 +1,113 @@
+//@Metadata.layer: layer
+@Metadata.layer: #CUSTOMER
+@UI: { 
+        headerInfo: { 
+                        typeName: 'PO_Detail', typeNamePlural: 'Purchase Order',
+                        title: { type: #STANDARD, label: 'Purchase Order', value: 'PONumber'  }
+                    }
+}
+annotate entity YC_POHDR
+    with 
+{
+  @EndUserText.label: 'Purchase Order'
+  @UI.lineItem: [{ position: 10, type: #FOR_ACTION, label: 'Print Purchase Order Form', dataAction: 'print_poform' }]
+  @UI.selectionField: [{ position: 10 }]
+    @UI.facet: [{   //id : 'PO_Details', 
+                    purpose: #STANDARD, 
+                    type: #IDENTIFICATION_REFERENCE,
+                    label: 'General data',
+                    position: 10
+                },
+                
+                { 
+                    //id : 'PO_ITEM', 
+                    purpose: #STANDARD, 
+                    type: #LINEITEM_REFERENCE,
+                    label: 'Items',
+                    position: 20,
+                    targetElement: '_Ekpo'
+                }
+                ]
+    
+  @UI.identification: [ { position: 10 } ]
+  PONumber;
+
+  @EndUserText.label: 'Vendor'
+  @UI.lineItem: [ { position: 20 } ]
+  @UI.identification: [{ position: 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  Vendor;
+
+  @EndUserText.label: 'Address'
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.identification: [{ position: 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  Addrs; 
+  
+  @EndUserText.label: 'Ship To'
+  @UI.lineItem: [ { position: 40 } ]
+  @UI.identification: [{ position: 40 }]
+  @UI.selectionField: [{ position: 40 }]
+  Shipto;
+
+  @EndUserText.label: 'Address'
+  @UI.lineItem: [ { position: 50 } ]
+  @UI.identification: [{ position: 50 }]
+  @UI.selectionField: [{ position: 50 }]
+  Addr2;   
+  
+  @EndUserText.label: 'Date'
+  @UI.lineItem: [ { position: 60 } ]
+  @UI.identification: [{ position: 60 }]
+  @UI.selectionField: [{ position: 60 }]
+  PODate; 
+  
+  @EndUserText.label: 'Sub Total'
+  @UI.lineItem: [ { position: 70 } ]
+  @UI.identification: [{ position: 70 }]
+  @UI.selectionField: [{ position: 70 }]
+  SubTotal;   
+  
+  @EndUserText.label: 'Tax'
+  @UI.lineItem: [ { position: 80 } ]
+  @UI.identification: [{ position: 80 }]
+  @UI.selectionField: [{ position: 80 }]
+  TotTax;   
+  
+  @EndUserText.label: 'Shipping'
+  @UI.lineItem: [ { position: 90 } ]
+  @UI.identification: [{ position: 90 }]
+  @UI.selectionField: [{ position: 90 }]
+  ShipCost;   
+  
+  @EndUserText.label: 'Other Cost'
+  @UI.lineItem: [ { position: 100 } ]
+  @UI.identification: [{ position: 100 }]
+  @UI.selectionField: [{ position: 100 }]
+  OtherCost;     
+  
+  @EndUserText.label: 'Requisitioner'
+  @UI.lineItem: [ { position: 110 } ]
+  @UI.identification: [{ position: 110 }]
+  @UI.selectionField: [{ position: 110 }]
+  ReqName;    
+
+  @EndUserText.label: 'Incoterms'
+  @UI.lineItem: [ { position: 120 } ]
+  @UI.identification: [{ position: 120 }]
+  @UI.selectionField: [{ position: 120 }]
+  IncoTerms; 
+  
+  @EndUserText.label: 'Currency'
+  @UI.lineItem: [ { position: 130 } ]
+  @UI.identification: [{ position: 130 }]
+  @UI.selectionField: [{ position: 130 }]
+  Currency; 
+  
+  @EndUserText.label: 'Total Amount'
+  @UI.lineItem: [ { position: 140 } ]
+  @UI.identification: [{ position: 140 }]
+  @UI.selectionField: [{ position: 140 }]
+  TotAmt; 
+       
+}
